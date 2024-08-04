@@ -1,14 +1,13 @@
 package com.kumarsonu101.graphql_service.service;
 
+import com.kumarsonu101.graphql_service.Exception.ProductNotFoundException;
 import com.kumarsonu101.graphql_service.entity.InputProduct;
 import com.kumarsonu101.graphql_service.entity.Product;
 import com.kumarsonu101.graphql_service.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -23,20 +22,10 @@ public class ProductService {
     public List<Product> getProductsByCategory(String category) {
         return productRepository.findByCategory(category);
     }
+    public Product updateStock(int id, int stock) {
 
-//    public Product updateStock(int id, int stockQuantity) {
-//        System.out.println("inside service method");
-//        Product existingProduct =
-//                productRepository.findById(id)
-//                        .orElseThrow(() -> new RuntimeException("Product not found for given id" + id));
-//        existingProduct.setStock(stockQuantity);
-//        return productRepository.save(existingProduct);
-//    }
-
-    public Product updateStock(int id, int stock){
-
-        Product existingProduct= productRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("product not found with id "+id));
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("product not found with id " + id));
 
         existingProduct.setStock(stock);
         return productRepository.save(existingProduct);
@@ -54,12 +43,19 @@ public class ProductService {
         return productRepository.save(existingProduct);
     }
 
-    public Product addNewProduct(InputProduct inputProduct) {
-        Product newProduct = new Product();
-        newProduct.setStock(inputProduct.getStock());
-        newProduct.setName(inputProduct.getName());
-        newProduct.setPrice(inputProduct.getPrice());
-        newProduct.setStock(inputProduct.getStock());
-       return productRepository.save(newProduct);
+    public String deleteProductById(int id) {
+        productRepository.findById(id)
+                .ifPresentOrElse(
+                        product -> productRepository.delete(product),
+                        () -> {
+                            throw new ProductNotFoundException("Product not found with id: " + id);
+                        }
+                );
+        return "Product deleted successfully";
+    }
+
+    public Product addNewProduct(String category, String name, Float price, int stock) {
+        Product newProduct = new Product(category,name,price,stock);
+        return productRepository.save(newProduct);
     }
 }

@@ -17,8 +17,9 @@ input InputProduct {
     stock: Int
 }
 
-type  Mutation{
+type Mutation{
     updateStockById(id:ID,stock:Int):Product
     updateNewStockWithExistingStock(id:ID,newStockQuantity:Int):Product
-    addProduct(product : InputProduct) : Product
+    deleteProductById(id:ID) : String
+    addProduct(category: String!, name: String!,price: Float!, stock: Int!) : Product
 }

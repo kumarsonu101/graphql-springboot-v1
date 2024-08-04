@@ -44,8 +44,13 @@ public class ProductController {
     }
 
     @MutationMapping
-    public Product addProduct(InputProduct inputProduct) {
-        return productService.addNewProduct(inputProduct);
+    public String deleteProductById(@Argument int id) {
+        return productService.deleteProductById(id);
+    }
+
+    @MutationMapping
+    public Product addProduct(String category, String name, Float price, int stock) {
+        return productService.addNewProduct(category,name,price,stock);
     }
 
 }
